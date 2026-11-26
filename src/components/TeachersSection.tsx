@@ -26,8 +26,8 @@ export function TeachersSection({ teachers }: TeachersSectionProps) {
             </h2>
           </div>
           <p className="max-w-md text-sm leading-relaxed text-[#3C4641]">
-            Move your cursor over any teacher portrait to view their full qualifications,
-            years of experience, and languages taught.
+            Move your cursor over any teacher portrait to view their qualifications,
+            experience, languages, specialty, and availability.
           </p>
         </div>
 
@@ -77,7 +77,6 @@ export function TeachersSection({ teachers }: TeachersSectionProps) {
                   </div>
                 )}
 
-                {/* Default resting caption */}
                 <div
                   className={`pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-5 text-white transition-opacity duration-200 ${
                     isRevealed
@@ -93,7 +92,6 @@ export function TeachersSection({ teachers }: TeachersSectionProps) {
                   </p>
                 </div>
 
-                {/* Hover & Focus Information Reveal — info only, no self-assign button */}
                 <div
                   className={`absolute inset-0 flex flex-col justify-between bg-[#07261C]/95 p-5 text-white transition-all duration-200 ease-out ${
                     isRevealed
@@ -110,9 +108,9 @@ export function TeachersSection({ teachers }: TeachersSectionProps) {
                     </h3>
                     <p className="mt-0.5 text-xs text-white/80">{teacher.title}</p>
 
-                    <div className="my-3.5 h-px bg-white/15" />
+                    <div className="my-3 h-px bg-white/15" />
 
-                    <dl className="space-y-3 text-xs leading-relaxed">
+                    <dl className="space-y-2.5 text-xs leading-relaxed">
                       <div>
                         <dt className="font-semibold text-[#D6B87C]">Qualifications</dt>
                         <dd className="mt-0.5 text-white/95">{teacher.qualifications}</dd>
@@ -125,13 +123,15 @@ export function TeachersSection({ teachers }: TeachersSectionProps) {
                       </div>
                       <div>
                         <dt className="font-semibold text-[#D6B87C]">Biography</dt>
-                        <dd className="mt-0.5 text-white/90">{teacher.bio}</dd>
+                        <dd className="mt-0.5 line-clamp-3 text-white/90">
+                          {teacher.bio}
+                        </dd>
                       </div>
                     </dl>
                   </div>
 
                   <p className="border-t border-white/15 pt-3 text-[11px] font-medium text-white/75">
-                    Assigned by Hidayat Academy Administration
+                    Assigned by Yaqoot Wal Marjan Administration
                   </p>
                 </div>
               </article>

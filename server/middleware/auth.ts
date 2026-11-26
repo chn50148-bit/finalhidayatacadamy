@@ -1,10 +1,18 @@
 import crypto from 'node:crypto';
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { findUserById, updateUser, type UserRecord } from '../db/repository.ts';
+import {
+  findUserById,
+  updateUser,
+  type UserRecord,
+  type UserRole,
+} from '../db/repository.ts';
 
-const JWT_SECRET =
-  process.env.JWT_SECRET?.trim() || crypto.randomBytes(32).toString('hex');
+const FALLBACK_JWT_SECRET = crypto.randomBytes(32).toString('hex');
+
+function getJwtSecret(): string {
+  return process.env.JWT_SECRET?.trim() || FALLBACK_JWT_SECRET;
+}
 
 export interface AuthenticatedRequest extends Request {
   authUser?: UserRecord;
@@ -13,13 +21,14 @@ export interface AuthenticatedRequest extends Request {
 export function signAuthToken(user: UserRecord): string {
   return jwt.sign(
     { sub: user.id, email: user.email, role: user.role },
-    JWT_SECRET,
+    getJwtSecret(),
     { expiresIn: '7d' }
   );
 }
 
 export async function syncTrialLockState(user: UserRecord): Promise<UserRecord> {
-  if (user.accessStatus === 'active') {
+  // Teachers and administrators never receive student trial restrictions
+  if (user.role !== 'student' || user.accessStatus === 'active' || !user.trialEndsAt) {
     return user;
   }
   const trialExpired = Date.now() > new Date(user.trialEndsAt).getTime();
@@ -43,7 +52,7 @@ export async function requireAuth(
 
   const token = authHeader.slice('Bearer '.length).trim();
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as { sub?: string };
+    const payload = jwt.verify(token, getJwtSecret()) as { sub?: string };
     if (!payload.sub || typeof payload.sub !== 'string') {
       res.status(401).json({ error: 'Invalid session token.' });
       return;
@@ -51,7 +60,7 @@ export async function requireAuth(
 
     const user = await findUserById(payload.sub);
     if (!user) {
-      res.status(401).json({ error: 'Student account not found.' });
+      res.status(401).json({ error: 'Account not found.' });
       return;
     }
 
@@ -62,7 +71,28 @@ export async function requireAuth(
   }
 }
 
-export function requireUnlockedAccess(
+export function requireRole(...allowedRoles: UserRole[]) {
+  return (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): void => {
+    const user = req.authUser;
+    if (!user) {
+      res.status(401).json({ error: 'Authentication required.' });
+      return;
+    }
+    if (!allowedRoles.includes(user.role)) {
+      res.status(403).json({
+        error: 'Access denied. You do not have permission for this resource.',
+      });
+      return;
+    }
+    next();
+  };
+}
+
+export function requireUnlockedStudentAccess(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
@@ -72,11 +102,11 @@ export function requireUnlockedAccess(
     res.status(401).json({ error: 'Authentication required.' });
     return;
   }
-  if (user.accessStatus === 'locked') {
+  if (user.role === 'student' && user.accessStatus === 'locked') {
     res.status(403).json({
       code: 'DASHBOARD_LOCKED',
       error:
-        'Your 3-day free trial has ended. Please select a course plan and pay your monthly fee to unlock classes.',
+        'Your 3-day free trial has expired. Please submit an enrollment payment to continue learning.',
     });
     return;
   }

@@ -2,11 +2,17 @@ import { BookOpen, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import type { StudentUser } from '../types';
 
+export type PortalEntryMode =
+  | 'student-register'
+  | 'student-login'
+  | 'teacher-login'
+  | 'admin-login';
+
 interface NavbarProps {
   currentView: 'academy' | 'portal';
   user: StudentUser | null;
   onNavigateSection: (sectionId: string) => void;
-  onOpenPortal: (mode?: 'register' | 'login', intent?: 'trial' | 'enroll') => void;
+  onOpenPortal: (mode: PortalEntryMode, options?: { intent?: 'trial' | 'enroll' }) => void;
 }
 
 export function Navbar({
@@ -32,7 +38,7 @@ export function Navbar({
         >
           <BookOpen className="h-5 w-5 text-[#093628]" aria-hidden="true" />
           <span className="font-display text-2xl font-bold tracking-tight text-[#111815] whitespace-nowrap shrink-0">
-            Hidayat Academy
+            Yaqoot Wal Marjan
           </span>
         </button>
 
@@ -40,6 +46,13 @@ export function Navbar({
           aria-label="Primary"
           className="hidden md:flex items-center gap-7 text-sm font-semibold text-[#3C4641]"
         >
+          <button
+            type="button"
+            onClick={() => handleSectionClick('about')}
+            className="hover:text-[#093628] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+          >
+            About
+          </button>
           <button
             type="button"
             onClick={() => handleSectionClick('courses')}
@@ -63,22 +76,34 @@ export function Navbar({
           </button>
           <button
             type="button"
-            onClick={() => onOpenPortal(user ? 'login' : 'register', 'enroll')}
-            className={`hover:text-[#093628] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0 ${
-              currentView === 'portal' ? 'text-[#093628]' : ''
-            }`}
+            onClick={() => handleSectionClick('contact')}
+            className="hover:text-[#093628] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
           >
-            Enroll Now
+            Contact
           </button>
         </nav>
 
         <div className="flex items-center gap-3 shrink-0">
           <button
             type="button"
-            onClick={() => onOpenPortal(user ? 'login' : 'register', 'trial')}
+            onClick={() =>
+              user
+                ? onOpenPortal(
+                    user.role === 'admin'
+                      ? 'admin-login'
+                      : user.role === 'teacher'
+                      ? 'teacher-login'
+                      : 'student-login'
+                  )
+                : onOpenPortal('student-register', { intent: 'trial' })
+            }
             className="hidden sm:inline-flex items-center justify-center rounded-lg bg-[#093628] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#06261C] whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#093628] focus-visible:ring-offset-2"
           >
-            {user ? 'Open Dashboard' : 'Start 3-Day Free Trial'}
+            {user
+              ? currentView === 'portal'
+                ? 'Dashboard Active'
+                : 'Open Dashboard'
+              : 'Start Free Trial'}
           </button>
 
           <button
@@ -94,47 +119,51 @@ export function Navbar({
 
       {mobileOpen && (
         <div className="border-t border-[#D4CBB8] bg-[#F3EDE2] px-6 py-4 md:hidden">
-          <div className="flex flex-col gap-3 text-sm font-semibold text-[#111815]">
+          <div className="flex flex-col gap-2.5 text-sm font-semibold text-[#111815]">
+            <button
+              type="button"
+              onClick={() => handleSectionClick('about')}
+              className="py-1.5 text-left hover:text-[#093628]"
+            >
+              About
+            </button>
             <button
               type="button"
               onClick={() => handleSectionClick('courses')}
-              className="py-2 text-left hover:text-[#093628]"
+              className="py-1.5 text-left hover:text-[#093628]"
             >
               Courses
             </button>
             <button
               type="button"
               onClick={() => handleSectionClick('teachers')}
-              className="py-2 text-left hover:text-[#093628]"
+              className="py-1.5 text-left hover:text-[#093628]"
             >
               Teachers
             </button>
             <button
               type="button"
               onClick={() => handleSectionClick('pricing')}
-              className="py-2 text-left hover:text-[#093628]"
+              className="py-1.5 text-left hover:text-[#093628]"
             >
               Pricing
             </button>
             <button
               type="button"
-              onClick={() => {
-                setMobileOpen(false);
-                onOpenPortal(user ? 'login' : 'register', 'enroll');
-              }}
-              className="py-2 text-left hover:text-[#093628]"
+              onClick={() => handleSectionClick('contact')}
+              className="py-1.5 text-left hover:text-[#093628]"
             >
-              Enroll Now
+              Contact
             </button>
             <button
               type="button"
               onClick={() => {
                 setMobileOpen(false);
-                onOpenPortal(user ? 'login' : 'register', 'trial');
+                onOpenPortal('student-register', { intent: 'trial' });
               }}
               className="mt-1 inline-flex items-center justify-center rounded-lg bg-[#093628] px-4 py-2.5 text-sm font-semibold text-white"
             >
-              {user ? 'Open Dashboard' : 'Start 3-Day Free Trial'}
+              {user ? 'Open Dashboard' : 'Start Free Trial'}
             </button>
           </div>
         </div>

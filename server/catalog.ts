@@ -1,6 +1,7 @@
 export interface TeacherSeed {
   slug: string;
   name: string;
+  email: string;
   title: string;
   photoUrl: string;
   qualifications: string;
@@ -11,23 +12,67 @@ export interface TeacherSeed {
   availability: string;
 }
 
+export interface CourseSeed {
+  slug: string;
+  number: string;
+  title: string;
+  description: string;
+  isAvailable: boolean;
+}
+
 export interface CoursePlan {
   id: string;
   name: string;
-  audience: string;
   priceUsd: number;
   billingCycle: string;
   sessionsPerWeek: number;
   durationMinutes: number;
   features: string[];
+  isAvailable: boolean;
 }
 
 export const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+
+export const COURSES_SEED: CourseSeed[] = [
+  {
+    slug: 'noorani-qaida',
+    number: '01.',
+    title: 'Noorani Qaida',
+    description:
+      'Step-by-step Arabic letter recognition, harakat articulation, and smooth word joining designed for children and adult beginners.',
+    isAvailable: true,
+  },
+  {
+    slug: 'tajweed',
+    number: '02.',
+    title: 'Tajweed',
+    description:
+      'Precision pronunciation from the exact points of articulation with live correction on Ghunnah, Madd, Qalqalah, and stopping rules.',
+    isAvailable: true,
+  },
+  {
+    slug: 'hifz',
+    number: '03.',
+    title: 'Hifz',
+    description:
+      'Balanced daily Sabaq, Sabqi, and Manzil retention plans led by experienced Huffaz so memorization stays permanent.',
+    isAvailable: true,
+  },
+  {
+    slug: 'qirat',
+    number: '04.',
+    title: 'Qirat',
+    description:
+      'Authentic recitation styles, classical Maqamat discipline, and vocal control taught by Ijazah-certified Qaris.',
+    isAvailable: true,
+  },
+];
 
 export const TEACHERS_SEED: TeacherSeed[] = [
   {
     slug: 'ustad-tariq-al-azhari',
     name: 'Ustad Tariq Al-Azhari',
+    email: 'tariq.alazhari@yaqootwalmarjan.com',
     title: 'Senior Qari & Ijazah Instructor',
     photoUrl: '/src/assets/images/teacher_tariq_1795605516935.jpg',
     qualifications: 'B.A. Usool al-Din (Al-Azhar) · Sanad Ijazah in Hafs an Asim',
@@ -40,6 +85,7 @@ export const TEACHERS_SEED: TeacherSeed[] = [
   {
     slug: 'ustadha-aisha-siddiqui',
     name: 'Ustadha Aisha Siddiqui',
+    email: 'aisha.siddiqui@yaqootwalmarjan.com',
     title: 'Lead Female Hifz & Nazra Scholar',
     photoUrl: '/src/assets/images/teacher_aisha_1795605518077.jpg',
     qualifications: 'Alimah Degree · Certified Hafiza & Tajweed Examiner',
@@ -52,18 +98,20 @@ export const TEACHERS_SEED: TeacherSeed[] = [
   {
     slug: 'qari-zayd-al-mansoor',
     name: 'Qari Zayd Al-Mansoor',
+    email: 'zayd.almansoor@yaqootwalmarjan.com',
     title: 'Ten Qiraat & Tafseer Specialist',
     photoUrl: '/src/assets/images/teacher_zayd_1795605518060.jpg',
     qualifications: 'M.A. Quranic Sciences · Ijazah in Qiraat Asharah',
     experienceYears: 15,
     languages: ['English', 'Arabic'],
-    specialty: 'Advanced Tajweed & Tafseer Studies',
-    bio: 'Fifteen years teaching advanced phonetic precision, Ahkam al-Tajweed, and thematic Surah reflection for intermediate and advanced students worldwide.',
+    specialty: 'Advanced Tajweed & Qirat Studies',
+    bio: 'Fifteen years teaching advanced phonetic precision, Ahkam al-Tajweed, and classical Qiraat styles for intermediate and advanced students worldwide.',
     availability: 'Tue – Sun · Evening & Weekend Slots',
   },
   {
     slug: 'ustadha-fatima-zahra',
     name: 'Ustadha Fatima Zahra',
+    email: 'fatima.zahra@yaqootwalmarjan.com',
     title: 'Noorani Qaida & Arabic Instructor',
     photoUrl: '/src/assets/images/teacher_fatima_1795605519424.jpg',
     qualifications: 'B.A. Arabic Literature · Certified Noorani Qaida Specialist',
@@ -79,7 +127,6 @@ export const COURSE_PLANS: CoursePlan[] = [
   {
     id: 'noorani-qaida',
     name: 'Noorani Qaida',
-    audience: '',
     priceUsd: 39,
     billingCycle: 'per month',
     sessionsPerWeek: 2,
@@ -90,11 +137,11 @@ export const COURSE_PLANS: CoursePlan[] = [
       'Foundation reading readiness assessment',
       'Academy-assigned certified scholar',
     ],
+    isAvailable: true,
   },
   {
     id: 'tajweed',
     name: 'Tajweed',
-    audience: '',
     priceUsd: 55,
     billingCycle: 'per month',
     sessionsPerWeek: 3,
@@ -105,11 +152,11 @@ export const COURSE_PLANS: CoursePlan[] = [
       'Recitation correction & audio practice',
       'Academy-assigned Ijazah scholar',
     ],
+    isAvailable: true,
   },
   {
     id: 'hifz',
     name: 'Hifz',
-    audience: '',
     priceUsd: 79,
     billingCycle: 'per month',
     sessionsPerWeek: 5,
@@ -120,11 +167,11 @@ export const COURSE_PLANS: CoursePlan[] = [
       'Weekly Juz retention & revision check',
       'Academy-assigned senior Hafiz/Hafiza',
     ],
+    isAvailable: true,
   },
   {
     id: 'qirat',
     name: 'Qirat',
-    audience: '',
     priceUsd: 69,
     billingCycle: 'per month',
     sessionsPerWeek: 3,
@@ -135,5 +182,6 @@ export const COURSE_PLANS: CoursePlan[] = [
       'Maqamat & classical Qiraat discipline',
       'Academy-assigned specialist Qari',
     ],
+    isAvailable: true,
   },
 ];
